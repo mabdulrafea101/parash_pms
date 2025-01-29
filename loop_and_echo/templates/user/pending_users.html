@@ -1,0 +1,45 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="container">
+  <h1>Pending Users</h1>
+  <!-- Pending Users Section -->
+  <div class="card">
+    <div class="card-header">
+      <h4>Pending User Approvals</h4>
+    </div>
+    <div class="card-body">
+      {% if pending_users %}
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>User Type</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in pending_users %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.get_user_type_display }}</td>
+              <td>
+                <a
+                  href="{% url 'confirm-user' user.pk %}"
+                  class="btn btn-sm btn-success"
+                  >Approve</a
+                >
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No pending user approvals.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

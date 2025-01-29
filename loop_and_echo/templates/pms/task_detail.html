@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ task.title }}</h1>
+    <p><strong>Description:</strong> {{ task.description }}</p>
+    <p><strong>Assigned To:</strong> {{ task.assigned_to.username }}</p>
+    <p><strong>Status:</strong> {{ task.get_status_display }}</p>
+    <p><strong>Start Date:</strong> {{ task.start_date|date:"M d, Y" }}</p>
+    <p><strong>Deadline:</strong> {{ task.deadline|date:"M d, Y" }}</p>
+    <p><strong>Completed At:</strong> {{ task.completed_at|date:"M d, Y" }}</p>
+
+    {% if user.user_type == 'manager' %}
+    <!-- Delete Task Button -->
+    <form method="post" action="{% url 'task-delete' task.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger mt-4">Delete Task</button>
+    </form>
+    {% endif %}
+</div>
+{% endblock content %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+  <h1>Task Notifications</h1>
+
+  <ul class="list-group">
+    {% for notification in task_notifications %}
+      <li class="list-group-item">
+        <p><strong>{{ notification.message }}</strong></p>
+        <p>Created at: {{ notification.created_at }}</p>
+        {% if not notification.is_read %}
+          <span class="badge bg-primary">New</span>
+        {% endif %}
+      </li>
+    {% empty %}
+      <li class="list-group-item">No task notifications found.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock content %}

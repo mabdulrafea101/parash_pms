@@ -1,0 +1,31 @@
+<div
+  class="modal fade"
+  id="addMilestoneModal_{{project.pk}}"
+  tabindex="-1"
+  aria-labelledby="addMilestoneModal_{{project.pk}}_Label"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addMilestoneModal_{{project.pk}}_Label">
+          Add Milestone for {{project.title}}
+        </h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'milestone-create' project.pk %}">
+          {% csrf_token %} {{ milestone_form.as_p }}
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

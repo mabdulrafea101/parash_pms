@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h1 class="m-0 font-weight-bold text-primary">{{ project.title }}</h1>
+        </div>
+        <div class="card-body row">
+            <div class="col-8">
+                <p><strong>Description:</strong> {{ project.description }}</p>
+                
+                <p><strong>Manager:</strong> {{ project.manager.username }}</p>
+                <p><strong>Client:</strong> {{ project.client.username }}</p>
+            </div>
+            <div class="col-4">
+                <p><strong>Status:</strong><i class="text-success"> {{ project.get_status_display }} </i></p>
+                <p><strong>Total Price:</strong> ${{ project.total_price }}</p>
+
+                <p><strong>Created At:</strong> {{ project.created_at|date:"M d, Y" }}</p>
+                <p><strong>Updated At:</strong> {{ project.updated_at|date:"M d, Y" }}</p>
+            </div>
+        </div>
+    </div>
+
+
+    <h3>Milestones</h3>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 row">
+            <h6 class="m-0 font-weight-bold text-primary col-10">Milestones for {{ project.title }}</h6>
+            {% if request.user.user_type == 'manager' %}
+                <button type="button" class="btn btn-primary col-2" data-toggle="modal" data-target="#addMilestoneModal_{{project.pk}}">
+                    Add More
+                </button>
+                <!-- Add Milestone Modal -->
+                {% include "pms/milestone_form.html" %}
+            {% endif %}
+            
+        </div>
+        <div class="card-body">
+            {% if project.milestones.all %}
+            <div class="table-responsive">
+                <table
+                  class="table table-bordered"
+                  id="dataTableMilestone"
+                  width="100%"
+                  cellspacing="0"
+                >
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th><strong>Deadline</strong></th>
+                            <th><strong>Status</strong></th>
+                            <th><strong>Payment Amount</strong> $</th>
+                            <th><strong>Payment Status</strong></th>
+                            {% if request.user.user_type == 'manager' or request.user.user_type == 'client'%}
+                            <th><strong>ACTION</strong></th>
+                            {% else %}
+                            {% endif %}
+                            
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Name</th>
+                            <th><strong>Deadline</strong></th>
+                            <th><strong>Status</strong></th>
+                            <th><strong>Payment Amount</strong> $</th>
+                            <th><strong>Payment Status</strong></th>
+                            {% if request.user.user_type == 'manager' or request.user.user_type == 'client'%}
+                            <th><strong>ACTION</strong></th>
+                            {% endif %}
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for milestone in project.milestones.all %}
+                        <tr>
+                            <td><a href="{% url 'milestone-detail' milestone.pk %}"> {{ milestone.title }}</a></td>
+                            <td>{{ milestone.deadline|date:"d M, Y" }}</td>
+                            <td>{{ milestone.get_status_display }}</td>
+                            <td>{% with latest_payment=milestone.payments.first %}
+                                {% if latest_payment %}
+                                    ${{ latest_payment.amount }} / ${{ project.total_price }}
+                                {% else %}
+                                    No payment yet
+                                {% endif %}
+                            {% endwith %}</td>
+                            {% if  milestone.payment_status == 'verified' %}
+                            <td><p>Paid</p></td>
+                            {% elif  milestone.payment_status == 'pending' %}
+                            <td><p>Paid but not verified</p></td>
+                            {% else %}
+                            <td>{{ milestone.payment_status }}</td>
+                            {% endif %}
+                            
+                        {% if request.user.user_type == 'manager' %}
+                        <td>
+                                {% if milestone.is_paid and milestone.payment_status == 'pending' %}
+                                <a href="{% url 'payment-verify' milestone.pk %}" class="btn btn-success">verify paid</a>
+                                {% endif %}
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addTaskModal_{{milestone.pk}}">
+                                Add Task
+                            </button>
+                            {% include "pms/task_form.html" %}
+                        </td>
+
+                        {% elif request.user.user_type == 'client' and not milestone.is_paid %}
+                            <td>
+                                <a href="{% url 'payment-create' milestone.pk %}" class="btn btn-success">Pay</a>
+                            </td>
+
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p>No milestones available for this project.</p>
+            <!-- Add Milestone Button -->
+            <button type="button" class="btn btn-primary col-2" data-toggle="modal" data-target="#addMilestoneModal_{{project.pk}}">
+                Add Milestone
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+    <h3>Tasks</h3>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Tasks for {{ project.title }}</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table
+                  class="table table-bordered"
+                  id="dataTableTask"
+                  width="100%"
+                  cellspacing="0"
+                >
+                    <thead>
+                        <tr>
+                            <th>Milestone</th>
+                            <th>Name</th>
+                            <th><strong>Assigned To</strong></th>
+                            <th><strong>Status</strong></th>
+                            <th><strong>Start Date</strong></th>
+                            <th><strong>Deadline</strong></th>
+                            <th><strong>Completed At</strong></th>
+                            {% if request.user.user_type == 'manager' %}
+                            <th><strong>ACTION</strong></th>
+                            {% endif %}
+                            
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th>Milestone</th>
+                            <th>Name</th>
+                            <th><strong>Assigned To</strong></th>
+                            <th><strong>Status</strong></th>
+                            <th><strong>Start Date</strong></th>
+                            <th><strong>Deadline</strong></th>
+                            <th><strong>Completed At</strong></th>
+                            {% if request.user.user_type == 'manager' %}
+                            <th><strong>ACTION</strong></th>
+                            {% endif %}
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% if project.milestones.all %}
+                        {% for milestone in project.milestones.all %}
+                            {% if milestone.tasks.all %} 
+                                {% for task in milestone.tasks.all %}
+                                <tr>
+                                    
+                                    <td>{{ milestone.title }}</td>
+
+                                    <td><a href="{% url 'task-detail' task.pk %}"> {{ task.title }}</a></td>
+                                    <td>{{ task.assigned_to }}</td>
+                                    <td>{{ task.get_status_display }}</td>
+                                    <td>{{ task.start_date|date:"d M, Y" }}</td>
+                                    <td>{{ task.deadline|date:"d M, Y" }}</td>
+                                    <td>{{ task.completed_at|date:"d M, Y" }}</td>
+                                    {% if request.user.user_type == 'manager' %}
+                                    <td>
+                                        <a class="btn btn-info" href="{% url 'task-detail' task.pk %}">View</a>
+                                        <button class="btn btn-danger">Update</button>
+                                    </td>
+                                    {% endif %}
+                                    
+                                </tr>
+                                {% endfor %}
+
+                            {% endif %}
+                                
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="8"><p>No tasks available for {{ milestone.title }} milestone.</p></td>
+                        </tr>
+                        {% endif %}
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,10 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="container">
+  <h1>Confirm User</h1>
+  <p>Do you want to confirm this account?</p>
+  <form method="post" action="{% url 'confirm-user' object.pk %}">
+    {% csrf_token %} {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Approve</button>
+  </form>
+</div>
+{% endblock content %}

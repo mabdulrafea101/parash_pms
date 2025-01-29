@@ -1,0 +1,236 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="container py-4">
+  {% if user.user_type == 'manager' %}
+  <div class="row mb-4">
+    <div class="col">
+      <h2>Manager Dashboard</h2>
+    </div>
+    <div class="col text-end">
+      <a href="{% url 'project-create' %}" class="btn btn-primary"
+        >Create New Project</a
+      >
+    </div>
+  </div>
+
+  <!-- Projects Section -->
+  <div class="card mb-4">
+    <div class="card-header">
+      <h4>All Projects</h4>
+    </div>
+    <div class="card-body">
+      {% if dashboard_data.projects %}
+      <div class="table-responsive">
+        <table
+          class="table table-bordered"
+          id="dataTableProject"
+          width="100%"
+          cellspacing="0"
+        >
+          <thead>
+            <tr>
+              <th>Project</th>
+              <th>Client</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for project in dashboard_data.projects %}
+            <tr>
+              <td>{{ project.title }}</td>
+              <td>{{ project.client.username }}</td>
+              <td>
+                <span
+                  class="badge bg-{{ project.status|yesno:'success,warning' }}"
+                  >{{ project.status }}</span
+                >
+              </td>
+              <td>
+                <a
+                  href="{% url 'project-detail' project.pk %}"
+                  class="btn btn-sm btn-info"
+                  >View</a
+                >
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No projects found.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Pending Users Section -->
+  <div class="card shadow mb-4">
+    <div class="card-header py-3">
+      <h6 class="m-0 font-weight-bold text-primary">Pending User Approvals</h6>
+    </div>
+    <div class="card-body">
+      {% if dashboard_data.pending_users %}
+      <div class="table-responsive">
+        <table
+          class="table table-bordered"
+          id="dataTableUsers"
+          width="100%"
+          cellspacing="0"
+        >
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>User Type</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in dashboard_data.pending_users %}
+            <tr>
+              <td>{{ user.username }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.get_user_type_display }}</td>
+              <td>
+                <a
+                  href="{% url 'confirm-user' user.pk %}"
+                  class="btn btn-sm btn-success"
+                  >Approve</a
+                >
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p>No pending user approvals.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  {% elif user.user_type == 'team_member' %}
+  <h2>Team Member Dashboard</h2>
+
+  <!-- Tasks Section -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-header">
+        <h4>Your Projects</h4>
+      </div>
+      <div class="card-body">
+        {% if dashboard_data.projects %}
+        <div class="table-responsive">
+          <table
+            class="table table-bordered"
+            id="dataTableProjectClient"
+            width="100%"
+            cellspacing="0"
+          >
+            <thead>
+              <tr>
+                <th>Task</th>
+                <th>Project</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for task in dashboard_data.tasks %}
+              <tr>
+                <td>{{ task.title }}</td>
+                <td>{{ task.milestone.project.title }}</td>
+                <td>{{ task.deadline|date:"M d, Y" }}</td>
+                <td>
+                  <span
+                    class="badge bg-{{ task.status|yesno:'success,warning' }}"
+                  >
+                    {{ task.get_status_display }}
+                  </span>
+                </td>
+                <td>
+                  <a
+                    href="{% url 'task-update' task.pk %}"
+                    class="btn btn-sm btn-primary"
+                    >Update Status</a
+                  >
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p>No tasks assigned.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% else %} {# client #}
+    <h2>Client Dashboard</h2>
+
+    <!-- Projects Section -->
+    <div class="card">
+      <div class="card-header">
+        <h4>Your Projects</h4>
+      </div>
+      <div class="card-body">
+        {% if dashboard_data.projects %}
+        <div class="table-responsive">
+          <table
+            class="table table-bordered"
+            id="dataTableProject"
+            width="100%"
+            cellspacing="0"
+          >
+            <thead>
+              <tr>
+                <th>Project</th>
+                <th>Manager</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for project in dashboard_data.projects %}
+              <tr>
+                <td>{{ project.title }}</td>
+                <td>{{ project.manager.username }}</td>
+                <td>${{ project.total_price }}</td>
+                <td>
+                  <span
+                    class="badge bg-{{ project.status|yesno:'success,warning' }}"
+                  >
+                    {{ project.get_status_display }}
+                  </span>
+                </td>
+                <td>
+                  <a
+                    href="{% url 'project-detail' project.pk %}"
+                    class="btn btn-sm btn-info"
+                    >View</a
+                  >
+                  {% if project.status == 'pending' %}
+                  <a
+                    href="{% url 'project-approve' project.pk %}"
+                    class="btn btn-sm btn-success"
+                    >Approve</a
+                  >
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <p>No projects found.</p>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+  {% endblock %}
+</div>

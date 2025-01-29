@@ -1,0 +1,25 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<div class="container mt-4">
+  <h1>{{ milestone.title }}</h1>
+  <p><strong>Description:</strong> {{ milestone.description }}</p>
+  <p><strong>Deadline:</strong> {{ milestone.deadline|date:"M d, Y" }}</p>
+  <p><strong>Status:</strong> {{ milestone.get_status_display }}</p>
+  <p><strong>Payment Amount:</strong>{% with latest_payment=milestone.payments.first %}
+    {% if latest_payment %}
+        ${{ latest_payment.amount }}
+    {% else %}
+        No payment yet
+    {% endif %}
+{% endwith %}</p>
+  <p><strong>Payment Status:</strong> {{ milestone.payment_status }}</p>
+  <p><strong>Created At:</strong> {{ milestone.created_at|date:"M d, Y" }}</p>
+
+  {% if user.user_type == 'manager' %}
+  <!-- Delete Milestone Button -->
+  <form method="post" action="{% url 'milestone-delete' milestone.pk %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger mt-4">Delete Milestone</button>
+  </form>
+  {% endif %}
+</div>
+{% endblock content %}
