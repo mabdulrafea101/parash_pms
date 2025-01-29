@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.conf import settings
 from django.urls import path, include
 from django.conf.urls.static import static
+from . import views
 
 urlpatterns = [
+    path('', views.landing_page, name='landing-page'),
     path('admin/', admin.site.urls),
     path('accounts/', include('user.urls')),
     path('pms/', include('management_system.urls'))

@@ -13,6 +13,8 @@
     <meta name="author" content="" />
 
     <title>{% block title %}Loop and Echo{% endblock title %}</title>
+
+     <link rel="icon" href="{% static 'img/logo.jpeg' %}" type="image/x-icon">
     <!-- Custom fonts for this template-->
     <link
       href="{% static 'vendor/fontawesome-free/css/all.min.css' %}"
@@ -44,23 +46,24 @@
     <div id="wrapper">
       <!-- Sidebar -->
       <ul
-        class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+        class="navbar-nav bg-gradient-dark sidebar sidebar-dark accordion"
         id="accordionSidebar"
       >
         <!-- Sidebar - Brand -->
         <a
           class="sidebar-brand d-flex align-items-center justify-content-center"
           href="{% url 'dashboard' %}"
+          style="height: auto;"
         >
-          <div class="sidebar-brand-icon rotate-n-15">
-            <i class="fas fa-laugh-wink"></i>
+          <div class="sidebar-brand-icon">
+            <img src="{% static 'img/logo.jpeg' %}" style="max-width: 100%; height: auto; display: block;">
           </div>
-          <div class="sidebar-brand-text mx-3">Loop <sup> & </sup> Echo</div>
+        
         </a>
 
         {% if user.is_authenticated %}
         <!-- Divider -->
-        <hr class="sidebar-divider my-0" />
+        <hr class="sidebar-divider my-0 mt-2" />
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item">
@@ -215,7 +218,7 @@
         <div id="content">
           <!-- Topbar -->
           <nav
-            class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow"
+            class="navbar navbar-expand navbar-dark bg-dark topbar mb-4 static-top shadow"
           >
             <!-- Sidebar Toggle (Topbar) -->
             <button
