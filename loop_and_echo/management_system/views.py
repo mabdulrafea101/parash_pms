@@ -110,6 +110,15 @@ class MilestoneDeleteView(LoginRequiredMixin, ManagerRequiredMixin, DeleteView):
 
 
 # Task Views
+class TaskListView(LoginRequiredMixin, TeamMemberRequiredMixin, ListView):
+    model = Task
+    template_name = 'pms/task_list.html'  # Create this template
+    context_object_name = 'tasks'
+
+    def get_queryset(self):
+        return Task.objects.filter(assigned_to=self.request.user)
+    
+
 class TaskCreateView(LoginRequiredMixin, ManagerRequiredMixin, CreateView):
     model = Task
     form_class = TaskForm
