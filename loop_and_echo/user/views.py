@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, ListView, UpdateView
+from django.views.generic import CreateView, ListView, UpdateView, DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.shortcuts import redirect, get_object_or_404
@@ -92,3 +92,22 @@ class DashboardView(LoginRequiredMixin, ListView):
             return {
                 'projects': user.client_projects.all()
             }
+
+
+class ProfileDetailView(LoginRequiredMixin, DetailView):
+    model = Profile
+    template_name = 'user/profile_detail.html'
+    context_object_name = 'profile'
+
+    def get_object(self, queryset=None):
+        return self.request.user.profile
+
+
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    template_name = 'user/profile_update.html'
+    success_url = reverse_lazy('profile')
+
+    def get_object(self, queryset=None):
+        return self.request.user.profile

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}My Profile{% endblock title %}
+{% block content %}
+<div class="container">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h1 class="m-0 font-weight-bold text-primary">Profile Detail</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-8">
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>User Type:</strong> {{ user.get_user_type_display }}</p>
+                     <p><strong>Phone:</strong> {{ user.phone }}</p>
+                </div>
+                <div class="col-md-4 text-center">
+                    {% if user.profile.profile_picture %}
+                        <img src="{{ user.profile.profile_picture.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3" style="max-width: 200px;"/>
+                    {% else %}
+                        <img src="{% static 'img/undraw_profile.svg' %}" alt="Default Profile Picture" class="img-fluid rounded-circle mb-3" style="max-width: 200px;"/>
+                        <p>No Profile Picture</p>
+                    {% endif %}
+                </div>
+                
+            </div>
+             <div class="row">
+                <div class="col-md-12">
+                    <p><strong>Bio:</strong> {{user.profile.bio}}</p>
+                 <a href="{% url 'profile-update' %}" class="btn btn-primary">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

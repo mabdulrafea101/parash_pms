@@ -11,4 +11,6 @@ urlpatterns = [
          name='pending-users'),
     path('confirm-user/<int:pk>/', views.ConfirmUserView.as_view(),
          name='confirm-user'),
+    path('profile/', views.ProfileDetailView.as_view(), name='profile'),
+    path('profile/edit/', views.ProfileUpdateView.as_view(), name='profile-update'),
 ]

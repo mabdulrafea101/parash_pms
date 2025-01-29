@@ -8,7 +8,13 @@
   <ul class="list-group">
     {% for notification in task_notifications %}
       <li class="list-group-item">
-        <p><strong>{{ notification.message }}</strong></p>
+        <p>
+            <strong>
+                <a href="{% url 'task-detail' notification.task.pk %}">
+                    {{ notification.message }}
+                </a>
+            </strong>
+        </p>
         <p>Created at: {{ notification.created_at }}</p>
         {% if not notification.is_read %}
           <span class="badge bg-primary">New</span>

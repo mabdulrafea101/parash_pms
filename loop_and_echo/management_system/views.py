@@ -218,6 +218,8 @@ class TaskNotificationListView(LoginRequiredMixin, ListView):
             return TaskNotification.objects.all()
         elif user.user_type == 'team_member':
             return TaskNotification.objects.filter(task__assigned_to=user)
+        elif user.user_type == 'client':
+            return TaskNotification.objects.filter(task__milestone__project__client=user)
         else:
             return TaskNotification.objects.none()
 
